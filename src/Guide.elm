@@ -118,12 +118,12 @@ viewEvent e =
               [ div [ class "title" ] [ text e.title ]
               , text <| Event.categoryToEmoji e.category
               , text <| if e.kidFriendly then "🧸" else "" ]
-        , div [ class "row" ] <|
-              div [ class "time" ]
+        , div [ class "row" ]
+              [ div [ class "time" ]
                     [ text <| (getHours e.time |> String.fromInt |> String.pad 2 '0')++":"++(getMinutes e.time |> String.fromInt |> String.pad 2 '0') ++ "–00:00"
                            -- duration incrementMinutes TODO
                     ]
-              :: List.map (\d -> div [ class "time"] [ text <| Event.dayToShortString d ]) e.dates
+              , div [ class "days" ] (List.map (\d -> div [ class "day"] [ text <| Event.dayToShortString d ]) e.dates) ]
         , Markdown.toHtml [ class "description" ] e.description
         , div [ class "row" ]
               [ div [ class "camp" ] [ text e.camp ]

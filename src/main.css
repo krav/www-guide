@@ -67,16 +67,29 @@ body {
     font-size: 14pt;
     font-weight: 800;
 }
+
 .event .camp {
     font-size: 12pt;
     font-weight: 800;
 }
+
 .event .host {
     font-size: 10pt;
 }
+
 .event .time {
     font-size: 10pt;
     font-family: 'Roboto', sans-serif;
+}
+
+.event .day {
+    font-size: 10pt;
+    font-family: 'Roboto', sans-serif;
+    padding-lef: 10px;
+}
+
+.event .days {
+    justify-content: flex-end;
 }
 .djmusicmightgetseparatepresentation {
     background-color: #845ec2;
