@@ -5,8 +5,8 @@ import Html exposing (Html, text, div, h1, img)
 import Html.Attributes exposing (src)
 import Http
 
-import Html exposing (Html, a, div, text, input)
-import Html.Attributes exposing (class, id, placeholder, value, href)
+import Html exposing (Html, a, div, text, input, button)
+import Html.Attributes exposing (class, id, placeholder, value, href, disabled)
 import Html.Events exposing (onInput, onClick)
 
 --import Event exposing (Event)
@@ -14,23 +14,20 @@ import Guide exposing (Guide, Events, Selection, makeSchedule, viewSchedule, vie
 import Event exposing (Event, Category, Day)
 
 -- TODO --
--- day selection
+
+-- card design
+-- readme file
+
+
+-- comments
+-- day starts at 7 am
+
+-- ongoing events
+
+-- favouriting
+-- store list of strings in localstorage
+
 -- sorting
-
--- search view
-
--- Event cards
--- styling
--- event type color
--- event icons
--- next prev day on bottom,
-
-
--- Selecting bar: abs pos
-
-
---- publish
-
 -- filter: favourites
 -- filter: all, category
 -- filter: all, location
@@ -39,24 +36,25 @@ import Event exposing (Event, Category, Day)
 
 -- update index on search
 
--- favouriting
--- store list of strings in localstorage
+-- Selecting bar: abs pos?
+-- or: next prev day on bottom of page
+-- get default day and time
 
-
--- .ics export -- make ical library???
+-- .ics export -- make ical library?
 -- .ics export favourites
 
 -- error handling
 
--- Make special view for party cmaps
+-- Make special view for party camps
 
 -- push notifications
--- Bulletin messages
+-- chat
 
 ---- MODEL ----
 
 type alias Model =
     { guide : Maybe Guide
+    , error : String
     , search : String
     , selection : Selection
     }
@@ -65,6 +63,7 @@ type alias Model =
 init : ( Model, Cmd Msg )
 init =
     ( { guide = Nothing
+      , error = ""
       , search = ""
       , selection =
           { day = Event.Day "Monday 22." -- TODO
@@ -87,10 +86,10 @@ type Msg
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        GotCsv (Err _) ->
+        GotCsv (Err e) ->
             ( model, getCsv ) -- TODO errors
         GotCsv (Ok s) ->
-            ( { model | guide = Guide.new s |> Result.toMaybe }
+            ( { model | guide = Guide.new s |> Debug.log "a" |> Result.toMaybe }
             , Cmd.none )
         Search s ->
             ( { model | search = s }, Cmd.none )
@@ -114,19 +113,20 @@ getCsv =
 view : Model -> Html Msg
 view model =
     case model.guide of
-        Nothing ->
+        Nothing -> -- TODO
             div []
                 [ img [ src "/logo.svg" ] []
                 , h1 [] [ text "Your Elm App is possibly working!" ]
                 ]
         Just g ->
                 div []
-                    [ viewSelector g model.search
+                    [ viewSelector g model.search model.selection.day
                     , if String.isEmpty model.search then
-                        Guide.filter model.selection g.events |> makeSchedule |> viewSchedule
+                        Guide.filter model.selection g.events
+                        |> makeSchedule
+                        |> viewSchedule
                       else
-                        viewSearch model.search g
-                    ]
+                        viewSearch model.search g ]
 
 viewSearch : String -> Guide -> Html msg -- TODO move
 viewSearch s g =
@@ -135,17 +135,27 @@ viewSearch s g =
             (text ("Search error: "++er)) -- TODO errors
         Ok (index, matches) ->
             div [] <| List.map (\(match, score) ->
-                                    List.filter (\e -> String.contains match e.id ) g.events |> viewEvents
-                               ) matches
+                                    List.filter (\e ->
+                                                     String.contains match e.id)
+                                    g.events |> viewEvents) -- TODO displays wrong?
+                matches
 
-viewSelector : Guide -> String -> Html Msg -- TODO move
-viewSelector g search =
+viewSelector : Guide -> String -> Day -> Html Msg -- TODO move
+viewSelector g search day =
     div [ class "selector" ]
-        [ div [ class "days"] -- TODO use url and link to show current selection
-               (List.map (\d -> Html.button [ class "day", onClick (SetDay d)] [ text (Event.dayToString d) ]
-                                           ) g.days)
-        , input [ placeholder "Search", value search, onInput Search ] []
-        , text "blah"]
+        [ div [ class "days"]
+               (List.map (\d ->
+                              Html.button
+                              [ class "day"
+                              , onClick (SetDay d)
+                              , Html.Attributes.disabled (day == d)]
+                              [ text (Event.dayToString d) ])
+                    g.days)
+        , div [ class "days" ]
+            [ input [ placeholder "Search", value search, onInput Search ] []
+            , a [ href "https://github.com/krav/www-guide" ] [ text "About" ]
+            ]
+        ]
 
 
 ---- PROGRAM ----

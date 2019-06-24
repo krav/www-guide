@@ -8,6 +8,7 @@ import Clock exposing (RawTime, Time, fromRawParts, getHours, getMinutes)
 import ElmTextSearch as ETS
 import Html exposing (Html, a, div, text, h2, h3, h4, input)
 import Html.Attributes exposing (class, id)
+import Markdown
 
 import Event exposing (Event, Category, Day)
 
@@ -106,26 +107,35 @@ viewSchedule ds =
 
 viewEvents : Events -> Html msg
 viewEvents es =
-    div [] (List.map viewEvent es)
+    div [ class "events" ] (List.map viewEvent es)
 
-viewEvent : Event -> Html msg
+viewEvent : Event -> Html msg -- TODO move
 viewEvent e =
-    div [ class "event" ]
-        [ h3 [] [ text e.title ]
-        , h4 [ class "time" ] [ text <| (getHours e.time |> String.fromInt |> String.pad 2 '0')++":"++(getMinutes e.time |> String.fromInt |> String.pad 2 '0') ]
-        -- duration incrementMinutes
-        --, h4 [ class "time" ] [ text e.time ] dates
-        , h4 [ class "camp" ] [ text e.camp ]
-        , h4 [ class "host" ] [ text e.host ]
-        -- icons
-        , div [ class "description" ] [ text e.description ]
-        ]
+    div [ class "event"
+        , class (Event.categoryToSymbol e.category) ]
+        --, Html.Attributes.style "background-color" "lightblue" ]
+        [ div [ class "row" ]
+              [ div [ class "title" ] [ text e.title ]
+              , text <| Event.categoryToEmoji e.category
+              , text <| if e.kidFriendly then "🧸" else "" ]
+        , div [ class "row" ] <|
+              div [ class "time" ]
+                    [ text <| (getHours e.time |> String.fromInt |> String.pad 2 '0')++":"++(getMinutes e.time |> String.fromInt |> String.pad 2 '0') ++ "–00:00"
+                           -- duration incrementMinutes TODO
+                    ]
+              :: List.map (\d -> div [ class "time"] [ text <| Event.dayToShortString d ]) e.dates
+        , Markdown.toHtml [ class "description" ] e.description
+        , div [ class "row" ]
+              [ div [ class "camp" ] [ text e.camp ]
+              , div [ class "host" ] [ text e.host ]
+              ]]
+
 
 -- Decode events csv
 
 parseCsv : String -> Result CD.Errors Events
 parseCsv s =
-    Csv.parse s |> CD.decodeCsv decodeEvents
+    Csv.parse s |> Result.withDefault ({headers = [], records =[]}) |> CD.decodeCsv decodeEvents
 
 decodeEvents : Decoder (Event -> Event) Event
 decodeEvents =
