@@ -48,9 +48,13 @@ import Event exposing (Event, Category, Day)
 
 ---- MODEL ----
 
+type Error
+    = NoErr
+    | Error String
+
 type alias Model =
     { guide : Maybe Guide
-    , error : String
+    , error : Error
     , search : String
     , selection : Selection
     }
@@ -59,7 +63,7 @@ type alias Model =
 init : ( Model, Cmd Msg )
 init =
     ( { guide = Nothing
-      , error = ""
+      , error = NoErr
       , search = ""
       , selection =
           { day = Event.Day "Monday 22." -- TODO
@@ -83,10 +87,13 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         GotCsv (Err e) ->
-            ( model, getCsv ) -- TODO errors
+            ( { model | error = Error "HTTP error" }, getCsv )
         GotCsv (Ok s) ->
-            ( { model | guide = Guide.new s |> Result.toMaybe }
-            , Cmd.none )
+            case Guide.new s of
+                (Ok g) ->
+                    ( { model | guide = Just g } , Cmd.none )
+                (Err e) ->
+                    ( { model | error = Error "Parse error" } , Cmd.none )
         Search s ->
             ( { model | search = s }, Cmd.none )
         SetDay d ->
@@ -110,22 +117,28 @@ view : Model -> Html Msg
 view model =
     case model.guide of
         Nothing -> -- TODO
-            div [] []
+            div [] [ viewError model.error ]
         Just g ->
                 div []
-                    [ viewSelector g model.search model.selection.day
+                    [ viewError model.error
+                    , viewSelector g model.search model.selection.day
                     , if String.isEmpty model.search then
                         Guide.filter model.selection g.events
                         |> makeSchedule
                         |> viewSchedule
                       else
                         viewSearch model.search g ]
+viewError : Error -> Html msg
+viewError e =
+    case e of
+        NoErr -> text ""
+        (Error s) -> text s
 
 viewSearch : String -> Guide -> Html msg -- TODO move
 viewSearch s g =
     case search s g of
         Err er ->
-            (text ("Search error: "++er)) -- TODO errors
+            (text ("Search error: " ++ er))
         Ok (index, matches) ->
             List.map (\(match, score) ->
                           List.filter (\e ->
