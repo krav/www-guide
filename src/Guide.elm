@@ -9,6 +9,7 @@ import ElmTextSearch as ETS
 import Html exposing (Html, a, div, text, h2, h3, h4, input)
 import Html.Attributes exposing (class, id)
 import Markdown
+import Time
 
 import Event exposing (Event, Category, Day)
 
@@ -42,10 +43,15 @@ getDays _ = -- TODO
     [ (Event.Day "Monday 22."), (Event.Day "Tuesday 23."), (Event.Day "Wednesday 24."), (Event.Day "Thursday 25."), (Event.Day "Friday 26."), (Event.Day "Saturday 27."), (Event.Day "Sunday 28.")]
 
 makeSchedule : Events -> DaySchedule
-makeSchedule es = -- TODO all day events
-    List.Extra.gatherWith
-       (\e1 e2 -> getHours e1.time == getHours e2.time) es
-   |> List.map (\(a, b) -> (getHours a.time, a::b))
+makeSchedule es =
+    let
+      (allDay,rest) = List.partition (\e -> e.allDay) es
+    in
+      (-1, allDay)::(
+          List.Extra.gatherWith (\e1 e2 ->
+                                  getHours e1.time == getHours e2.time)
+          rest
+      |> List.map (\(a, b) -> (getHours a.time, a::b)))
 
 
 filter : Selection -> Events -> Events
@@ -98,7 +104,10 @@ viewSchedule : DaySchedule -> Html msg
 viewSchedule ds =
     div [] (List.map (\(h, es) ->
                   let
-                      hour = (String.fromInt h |> String.pad 2 '0')++":00"
+                      hour = if h == -1 then -- Fix this
+                                 "All day"
+                             else
+                                 (String.fromInt h |> String.pad 2 '0')++":00"
                   in
                   div [ ]
                       [ div [ class "hour" ] [ a [ id hour ] [ h2 [] [ text hour ] ]]
@@ -120,8 +129,8 @@ viewEvent e =
               , text <| if e.kidFriendly then "🧸" else "" ]
         , div [ class "row" ]
               [ div [ class "time" ]
-                    [ text <| (timeToString e.time) ++ "–" ++ "88:88"
-                           -- duration incrementMinutes TODO
+                    [ text <| (timeToString e.time) ++ "–" ++
+                          (timeToString (Clock.fromPosix <| Time.millisToPosix <| (Clock.toMillis e.time)+e.duration*60000))
                     ]
               , div [ class "days" ] (List.map (\d ->
                                                     div [ class "day" ]
@@ -159,6 +168,8 @@ decodeEvents =
                   |> andMap (field "What day(s) is the event occurring" decodeDays)
                   |> andMap (field "At what time does the event start" decodeTime)
                   |> andMap (field "For how long does the event run" decodeDuration)
+                  |> andMap (field "All-day events" <| \s ->
+                            Ok (String.contains "all-day" s))
         )
 
 decodeTime : String -> Result String Time

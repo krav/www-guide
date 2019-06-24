@@ -136,22 +136,24 @@ viewSearch s g =
             List.map (\(match, score) ->
                           List.filter (\e ->
                                            String.contains match e.id)
-                          g.events) -- TODO displays wrong?
+                          g.events)
             matches |> List.concat |> viewEvents
 
 viewSelector : Guide -> String -> Day -> Html Msg -- TODO move
 viewSelector g search day =
     div [ class "selector" ]
-        [ div [ class "days"]
+        [ div [ class "sel-days", class "sel-row" ]
                (List.map (\d ->
                               Html.button
                               [ class "day"
                               , onClick (SetDay d)
                               , Html.Attributes.disabled (day == d)]
-                              [ text (Event.dayToString d) ])
+                              [ text (Event.dayToShortString d) ])
                     g.days)
-        , div [ class "days" ]
-            [ input [ placeholder "Search", value search, onInput Search ] []
+        , div [ class "sel-row" ]
+            [ div [] [ input [ placeholder "Search", value search, onInput Search ] []
+                     , Html.button [ Html.Attributes.disabled (String.isEmpty search)
+                                   , onClick (Search "") ] [ text "Clear" ]]
             , a [ href "https://github.com/krav/www-guide" ] [ text "About" ]
             ]
         ]

@@ -20,6 +20,7 @@ type alias Event =
     , dates : List Day
     , time : Time
     , duration : Int
+    , allDay : Bool
     }
 
 

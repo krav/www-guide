@@ -27,7 +27,10 @@ body {
 }
 
 
-.days {
+.sel-days {
+    max-width: 350px;
+}
+.sel-row {
     display: flex;
     justify-content: space-between;
 }
@@ -38,13 +41,14 @@ body {
 }
 
 .selector {
-    max-width: 750px;
+    width:  100%;
+    #max-width: 450px;
     display: flex;
     flex-direction: column;
 }
 
 .selector input {
-    width: 30vw;
+    width: 150px;
 }
 .selector a {
 }
@@ -88,9 +92,11 @@ body {
     padding-left: 10px;
 }
 
-.event .days {
+.days {
+    display: flex;
     justify-content: flex-end;
 }
+
 .djmusicmightgetseparatepresentation {
     background-color: #845ec2;
 }
