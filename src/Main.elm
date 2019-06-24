@@ -15,9 +15,9 @@ import Event exposing (Event, Category, Day)
 
 -- TODO --
 
--- card design
 -- readme file
 
+-- icon, preview for facebook
 
 -- comments
 -- day starts at 7 am
@@ -115,8 +115,7 @@ view model =
     case model.guide of
         Nothing -> -- TODO
             div []
-                [ img [ src "/logo.svg" ] []
-                , h1 [] [ text "Your Elm App is possibly working!" ]
+                [ h1 [] [ text "Loading" ]
                 ]
         Just g ->
                 div []
@@ -134,11 +133,11 @@ viewSearch s g =
         Err er ->
             (text ("Search error: "++er)) -- TODO errors
         Ok (index, matches) ->
-            div [] <| List.map (\(match, score) ->
-                                    List.filter (\e ->
-                                                     String.contains match e.id)
-                                    g.events |> viewEvents) -- TODO displays wrong?
-                matches
+            List.map (\(match, score) ->
+                          List.filter (\e ->
+                                           String.contains match e.id)
+                          g.events) -- TODO displays wrong?
+            matches |> List.concat |> viewEvents
 
 viewSelector : Guide -> String -> Day -> Html Msg -- TODO move
 viewSelector g search day =

@@ -120,16 +120,24 @@ viewEvent e =
               , text <| if e.kidFriendly then "🧸" else "" ]
         , div [ class "row" ]
               [ div [ class "time" ]
-                    [ text <| (getHours e.time |> String.fromInt |> String.pad 2 '0')++":"++(getMinutes e.time |> String.fromInt |> String.pad 2 '0') ++ "–00:00"
+                    [ text <| (timeToString e.time) ++ "–" ++ "88:88"
                            -- duration incrementMinutes TODO
                     ]
-              , div [ class "days" ] (List.map (\d -> div [ class "day"] [ text <| Event.dayToShortString d ]) e.dates) ]
+              , div [ class "days" ] (List.map (\d ->
+                                                    div [ class "day" ]
+                                                    [ text <| Event.dayToShortString d ])
+                                          e.dates)]
         , Markdown.toHtml [ class "description" ] e.description
         , div [ class "row" ]
               [ div [ class "camp" ] [ text e.camp ]
               , div [ class "host" ] [ text e.host ]
               ]]
 
+
+
+timeToString t = (getHours t |> String.fromInt |> String.pad 2 '0')
+               ++ ":"
+               ++ (getMinutes t |> String.fromInt |> String.pad 2 '0')
 
 -- Decode events csv
 
