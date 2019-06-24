@@ -28,11 +28,12 @@ body {
 
 
 .sel-days {
-    max-width: 350px;
+    justify-content: space-between;
 }
 .sel-row {
     display: flex;
     justify-content: space-between;
+    padding-bottom: 10px;
 }
 
 .menu {
@@ -42,15 +43,20 @@ body {
 
 .selector {
     width:  100%;
-    #max-width: 450px;
+    max-width: 450px;
     display: flex;
     flex-direction: column;
 }
 
 .selector input {
     width: 150px;
+    margin-right: 10px;
 }
 .selector a {
+}
+
+.sel-days button {
+    padding: 5px 10px;
 }
 
 .events {
