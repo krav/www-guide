@@ -89,7 +89,7 @@ update msg model =
         GotCsv (Err e) ->
             ( model, getCsv ) -- TODO errors
         GotCsv (Ok s) ->
-            ( { model | guide = Guide.new s |> Debug.log "a" |> Result.toMaybe }
+            ( { model | guide = Guide.new s |> Result.toMaybe }
             , Cmd.none )
         Search s ->
             ( { model | search = s }, Cmd.none )
