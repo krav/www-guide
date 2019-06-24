@@ -15,20 +15,18 @@ import Event exposing (Event, Category, Day)
 
 -- TODO --
 
+-- error handling - type..
+-- loading screen
+
 -- readme file
 
--- icon, preview for facebook
-
--- comments
 -- day starts at 7 am
-
--- ongoing events
 
 -- favouriting
 -- store list of strings in localstorage
 
--- sorting
 -- filter: favourites
+-- sorting
 -- filter: all, category
 -- filter: all, location
 -- filter: all, family friendly
@@ -42,8 +40,6 @@ import Event exposing (Event, Category, Day)
 
 -- .ics export -- make ical library?
 -- .ics export favourites
-
--- error handling
 
 -- Make special view for party camps
 
