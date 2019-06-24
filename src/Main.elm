@@ -110,9 +110,7 @@ view : Model -> Html Msg
 view model =
     case model.guide of
         Nothing -> -- TODO
-            div []
-                [ h1 [] [ text "Loading" ]
-                ]
+            div [] []
         Just g ->
                 div []
                     [ viewSelector g model.search model.selection.day
