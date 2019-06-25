@@ -1,50 +1,13 @@
 module Main exposing (..)
 
 import Browser
-import Html exposing (Html, text, div, h1, img)
-import Html.Attributes exposing (src)
 import Http
-
 import Html exposing (Html, a, div, text, input, button)
-import Html.Attributes exposing (class, id, placeholder, value, href, disabled)
+import Html.Attributes exposing (class, id, src, placeholder, value, href, disabled)
 import Html.Events exposing (onInput, onClick)
 
---import Event exposing (Event)
 import Guide exposing (Guide, Events, Selection, makeSchedule, viewSchedule, viewEvents, search)
 import Event exposing (Event, Category, Day)
-
--- TODO --
-
--- error handling - type..
--- loading screen
-
--- readme file
-
--- day starts at 7 am
-
--- favouriting
--- store list of strings in localstorage
-
--- filter: favourites
--- sorting
--- filter: all, category
--- filter: all, location
--- filter: all, family friendly
--- Automatic current date and time selector - use anchors
-
--- update index on search
-
--- Selecting bar: abs pos?
--- or: next prev day on bottom of page
--- get default day and time
-
--- .ics export -- make ical library?
--- .ics export favourites
-
--- Make special view for party camps
-
--- push notifications
--- chat
 
 ---- MODEL ----
 
@@ -59,9 +22,8 @@ type alias Model =
     , selection : Selection
     }
 
-
-init : ( Model, Cmd Msg )
-init =
+init : String -> ( Model, Cmd Msg )
+init csv =
     ( { guide = Nothing
       , error = NoErr
       , search = ""
@@ -71,12 +33,9 @@ init =
           , familyFriendly = False
           , category = Nothing
           }
-    }, getCsv )
-
-
+    }, getCsv csv )
 
 ---- UPDATE ----
-
 
 type Msg
     = GotCsv (Result Http.Error String)
@@ -87,7 +46,7 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         GotCsv (Err e) ->
-            ( { model | error = Error "HTTP error" }, getCsv )
+            ( { model | error = Error "HTTP error" }, Cmd.none )
         GotCsv (Ok s) ->
             case Guide.new s of
                 (Ok g) ->
@@ -97,21 +56,19 @@ update msg model =
         Search s ->
             ( { model | search = s }, Cmd.none )
         SetDay d ->
-            let -- TODO
+            let
                 oldS = model.selection
-                s = { oldS | day = d}
+                s = { oldS | day = d }
             in
-            ( { model | selection = s}, Cmd.none )
+                ( { model | selection = s}, Cmd.none )
 
-getCsv : Cmd Msg
-getCsv =
+getCsv : String -> Cmd Msg
+getCsv url =
     Http.get
-        { url = "test.csv"
-        , expect = Http.expectString GotCsv
-        }
+        { url = url
+        , expect = Http.expectString GotCsv }
 
 ---- VIEW ----
-
 
 view : Model -> Html Msg
 view model =
@@ -128,6 +85,7 @@ view model =
                         |> viewSchedule
                       else
                         viewSearch model.search g ]
+
 viewError : Error -> Html msg
 viewError e =
     case e of
@@ -165,15 +123,13 @@ viewSelector g search day =
             ]
         ]
 
-
 ---- PROGRAM ----
 
-
-main : Program () Model Msg
+main : Program String Model Msg
 main =
     Browser.element
         { view = view
-        , init = \_ -> init
+        , init = init
         , update = update
         , subscriptions = always Sub.none
         }

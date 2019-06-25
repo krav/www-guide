@@ -8,13 +8,15 @@ import Clock exposing (RawTime, Time, fromRawParts, getHours, getMinutes)
 import ElmTextSearch as ETS
 import Html exposing (Html, a, div, text, h2, h3, h4, input)
 import Html.Attributes exposing (class, id)
-import Markdown
-import Time
 
-import Event exposing (Event, Category, Day)
+import Event exposing (Event, Category, Day, viewEvent)
+
+-- Model
 
 type alias Events = List Event
-type alias DaySchedule = List (Int, Events)
+
+type alias DaySchedule = List (Int, Events) -- (hour, events)
+
 type alias Selection =
     { day : Day
     , sorting : (Event -> Event -> Order)
@@ -22,12 +24,14 @@ type alias Selection =
     , category : Maybe Category
     --, location : Maybe String
     }
+
 type alias Guide =
     { events : Events
     , index : ETS.Index Event
     , days : List Day
     }
 
+-- String to guide
 
 new : String -> Result CD.Errors Guide
 new s
@@ -36,12 +40,14 @@ new s
                           { events = e
                           , index = buildIndex e
                           , days = getDays e })
+-- Days in event, sorted
 
 getDays : Events -> List Day
 getDays _ = -- TODO
     --List.map (\e -> .day es |> List.Extra.uniqueBy (\(Event.Day s) -> s)
     [ (Event.Day "Monday 22."), (Event.Day "Tuesday 23."), (Event.Day "Wednesday 24."), (Event.Day "Thursday 25."), (Event.Day "Friday 26."), (Event.Day "Saturday 27."), (Event.Day "Sunday 28.")]
 
+-- Gather events by hour, -1 is all day
 makeSchedule : Events -> DaySchedule
 makeSchedule es =
     let
@@ -53,7 +59,7 @@ makeSchedule es =
           rest
       |> List.map (\(a, b) -> (getHours a.time, a::b)))
 
-
+-- Filter events by selection
 filter : Selection -> Events -> Events
 filter s e =
     filterByDay s.day e
@@ -64,15 +70,11 @@ filter s e =
 sortByTime : Event -> Event -> Order
 sortByTime e1 e2 = Clock.compare e1.time e2.time
 
--- sortByDay
--- must dupe
-
 -- Filtering
 
 filterByDay : Day -> Events -> Events
 filterByDay d =
     List.filter (\e -> List.member d e.dates)
-
 -- TODO by camp
 -- TODO by type
 
@@ -101,7 +103,10 @@ search s g =
 -- Views
 
 viewSchedule : DaySchedule -> Html msg
-viewSchedule ds =
+viewSchedule ds_ =
+    let
+        ds = List.sortBy Tuple.first ds_
+    in
     div [] (List.map (\(h, es) ->
                   let
                       hour = if h == -1 then -- Fix this
@@ -118,41 +123,11 @@ viewEvents : Events -> Html msg
 viewEvents es =
     div [ class "events" ] (List.map viewEvent es)
 
-viewEvent : Event -> Html msg -- TODO move
-viewEvent e =
-    div [ class "event"
-        , class (Event.categoryToSymbol e.category) ]
-        --, Html.Attributes.style "background-color" "lightblue" ]
-        [ div [ class "row" ]
-              [ div [ class "title" ] [ text e.title ]
-              , text <| Event.categoryToEmoji e.category
-              , text <| if e.kidFriendly then "🧸" else "" ]
-        , div [ class "row" ]
-              [ div [ class "time" ]
-                    [ text <| (timeToString e.time) ++ "–" ++
-                          (timeToString (Clock.fromPosix <| Time.millisToPosix <| (Clock.toMillis e.time)+e.duration*60000))
-                    ]
-              , div [ class "days" ] (List.map (\d ->
-                                                    div [ class "day" ]
-                                                    [ text <| Event.dayToShortString d ])
-                                          e.dates)]
-        , Markdown.toHtml [ class "description" ] e.description
-        , div [ class "row" ]
-              [ div [ class "camp" ] [ text e.camp ]
-              , div [ class "host" ] [ text e.host ]
-              ]]
-
-
-
-timeToString t = (getHours t |> String.fromInt |> String.pad 2 '0')
-               ++ ":"
-               ++ (getMinutes t |> String.fromInt |> String.pad 2 '0')
-
--- Decode events csv
+-- Decode events CSV
 
 parseCsv : String -> Result CD.Errors Events
-parseCsv s =
-    Csv.parse s |> Result.withDefault ({headers = [], records =[]}) |> CD.decodeCsv decodeEvents
+parseCsv s = -- CD.decode expects a different error
+    Csv.parse s |> Result.withDefault ({headers = [], records = []}) |> CD.decodeCsv decodeEvents
 
 decodeEvents : Decoder (Event -> Event) Event
 decodeEvents =
@@ -205,4 +180,3 @@ decodeDays s =
     |> List.map String.trim
     |> List.map Event.Day
     |> Ok
-
