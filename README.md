@@ -9,11 +9,11 @@ Turn a CSV file into a festival What Where When Guide. [example](https://guide.t
 
 ## TODO
 
-* Favourite button (local storage backed)
-* Filter on favourite
-
 * Prettier selection bar
 * New card colours (gradient w/ camp?) 
+
+* Favourite button (local storage backed)
+* Filter on favourite
 
 * display and clear errors better
 
@@ -21,6 +21,10 @@ Turn a CSV file into a festival What Where When Guide. [example](https://guide.t
   * Better datetime storage?
 
 ## Wishlist
+
+* routing and permalinks to events
+
+* tooltips for icons etc
 
 * special view for DJ lineups
 * ics calendar export (all/fav)
