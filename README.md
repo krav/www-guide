@@ -15,6 +15,8 @@ Turn a CSV file into a festival What Where When Guide. [example](https://guide.t
 * Favourite button (local storage backed)
 * Filter on favourite
 
+* make all day events smaller
+
 * display and clear errors better
 
 * Day should start at 7 am instead of midnight
