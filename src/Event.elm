@@ -73,7 +73,7 @@ dayToString (Day c) = c
 dayToShortString (Day c) = String.left 3 c
 
 colorWheel l i  =
-    Color.Generator.rotate ((toFloat i) * 360 / (toFloat l)) Palette.X11.darkOrange
+    Color.Generator.rotate ((toFloat i) * 360 / (toFloat l)) (Color.fromRGB (167, 255, 145))
 
 categoryColor i _ =
     let
