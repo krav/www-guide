@@ -35,6 +35,13 @@ type alias Event =
     , allDay : Bool
     }
 
+type alias UserInfo a =
+    { a | fav : Bool
+        , id : String
+    }
+type alias UserEvent = UserInfo(Event)
+
+
 type alias CategoryMeta = { emoji : String, color : Color }
 
 categoryEnum : List Category
@@ -49,6 +56,7 @@ categoryEnum = [ Category "DJ/Music (might get separate presentation)"
                , Category "Performance"
                , Category "Ritual/Ceremony"
                ]
+
 categoryEmojiEnum : List String
 categoryEmojiEnum =
     [ "🎶"
@@ -88,7 +96,8 @@ categoryMeta = -- TODO messy
         |> Dict.fromList
 
 categoryGetMeta : Category -> CategoryMeta
-categoryGetMeta (Category c) = Dict.get c categoryMeta |> Maybe.withDefault { emoji = "💩", color = Palette.X11.red }
+categoryGetMeta (Category c) = Dict.get c categoryMeta
+                             |> Maybe.withDefault { emoji = "💩", color = Palette.X11.red }
 
 categoryToEmoji : Category -> String
 categoryToEmoji c = categoryGetMeta c |> .emoji
