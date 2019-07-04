@@ -45,7 +45,7 @@ type alias UserEvent = UserInfo(Event)
 type alias CategoryMeta = { emoji : String, color : Color }
 
 categoryEnum : List Category
-categoryEnum = [ Category "DJ/Music (might get separate presentation)"
+categoryEnum = [ Category "DJ/Music"
                , Category "Workshop/Class"
                , Category "Care/Support"
                , Category "Fire"

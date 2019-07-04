@@ -60,9 +60,9 @@ makeSchedule es =
       |> List.map (\(a, b) -> (getHours a.time, a::b)))
 
 -- Filter events by selection
-filter : Selection -> Events -> Events
-filter s e =
-    filterByDay s.day e
+filter : Day -> Selection -> Events -> Events
+filter d s e =
+    filterByDay d e
     |> List.sortWith s.sorting
 
 -- Sorting
@@ -94,6 +94,7 @@ newIndex
 
 buildIndex : Events -> ETS.Index Event
 buildIndex es =
+    --ETS.addDocs es newIndex |> Tuple.first TODO use cache
     ETS.addDocs es newIndex |> Tuple.first
 
 search : String -> Guide -> Result String ( ETS.Index Event, List (String, Float))
