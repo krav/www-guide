@@ -56,6 +56,7 @@ routeParser
     = UP.oneOf
       [ UP.map AboutPage (UP.s "about")
       , UP.map (\s -> DayPage <| Event.Day <| Maybe.withDefault "Monday 22." s ) (UP.top <?> Query.string "day")
+      , UP.map (\s -> DayPage <| Event.Day <| Maybe.withDefault "Monday 22." s ) (UP.s "index.html" <?> Query.string "day")
       ]
 
 ---- UPDATE ----
