@@ -181,11 +181,16 @@ viewAbout g =
     [ div [ class "selector" ]
           [ div [ class "sel-row" ]
                 [ a [ href "/"] [ text "<- Back" ]
-                , a [ href "https://menu.theborderland.se"] [ text "To Other Borderland Sites ->" ]]
+                , a [ href "https://menu.theborderland.se"
+                    , Html.Attributes.target "_blank" ]
+                      [ text "To Other Borderland Sites ->" ]]
           ]
     , Markdown.toHtml [] """
 # Borderland That There Then Guide
-Add this page to your **homescreen** *so it's almost like an app:* Android - with a newish Chrome click the button at the bottom of the screen. Apple - From the Share menu select "Add to Homescreen". This thing works without internet, so put your phone in airplane mode after.
+Add this page to your **homescreen** *so it's almost like an app:*
+
+  * Android - with a newish Chrome click the button at the bottom of the screen.
+  * Apple - From the Share menu select "Add to Homescreen". This thing works without internet, so put your phone in airplane mode after.
 
 You can submit new events and edit old ones by [using our form](https://docs.google.com/forms/d/e/1FAIpQLSe_LzyEiLiryK-R_y3lgCtdeYIhQC2sTBsWH38WHL_dF2_ptA/viewform), it can take a few hours for this page to update.
 
@@ -198,9 +203,10 @@ Bottom colour is camp colour. 🧸 is child friendly.
 
 """
     , div [] <| List.map (\c -> -- TODO move
-                              div [ class "event"
+                              div [ class "colordesc"
                                   , Html.Attributes.style "background" <| Color.toRGBString <| Event.categoryToColor c ]
                               [ div [ class "title" ] [ text <| Event.categoryToEmoji c
+                                                      , text "   "
                                                       , text <| Event.categoryToString c ] ]
                          ) Event.categoryEnum
     ]

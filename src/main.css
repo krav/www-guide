@@ -64,6 +64,16 @@ body {
     flex-wrap: wrap;
 }
 
+.colordesc {
+    flex-wrap: wrap;
+    align-self: stretch;
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+    border-radius: 5px;
+    padding: 10px 16px 10px 16px;
+    margin: 10px;
+}
+
+
 .event {
     flex-wrap: wrap;
     align-self: stretch;
@@ -73,6 +83,7 @@ body {
     margin: 10px;
     width: 400px;
 }
+
 .event .title {
     font-size: 14pt;
     font-weight: 800;
