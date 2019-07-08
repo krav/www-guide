@@ -66,17 +66,18 @@ body {
 
 .colordesc {
     flex-wrap: wrap;
-    align-self: stretch;
+    /* align-self: stretch; */
     box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
     border-radius: 5px;
     padding: 10px 16px 10px 16px;
     margin: 10px;
+    max-width: 640px;
 }
 
 
 .event {
     flex-wrap: wrap;
-    align-self: stretch;
+    align-self: baseline;
     box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
     border-radius: 5px;
     padding: 10px 16px 10px 16px;
