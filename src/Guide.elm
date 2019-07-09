@@ -8,6 +8,7 @@ import Clock exposing (RawTime, Time, fromRawParts, getHours, getMinutes)
 import ElmTextSearch as ETS
 import Html exposing (Html, a, div, text, h2, h3, h4, input)
 import Html.Attributes exposing (class, id)
+import Set exposing (Set)
 
 import Event exposing (Event, Category, Day, viewEvent)
 
@@ -18,10 +19,10 @@ type alias Events = List Event
 type alias DaySchedule = List (Int, Events) -- (hour, events)
 
 type alias Selection =
-    { day : Day
-    , sorting : (Event -> Event -> Order)
+    { sorting : (Event -> Event -> Order)
     , familyFriendly : Bool
     , category : Maybe Category
+    , onlyFavs : Bool
     --, location : Maybe String
     }
 
@@ -60,10 +61,18 @@ makeSchedule es =
       |> List.map (\(a, b) -> (getHours a.time, a::b)))
 
 -- Filter events by selection
-filter : Day -> Selection -> Events -> Events
-filter d s e =
+filter : Day -> Set String -> Selection -> Events -> Events
+filter d favs s e =
     filterByDay d e
+    |> filterFavs favs s
     |> List.sortWith s.sorting
+
+filterFavs : Set String -> Selection -> Events -> Events
+filterFavs favs s es =
+    if s.onlyFavs then
+        List.filter (\e -> Set.member e.id favs) es
+    else
+        es
 
 -- Sorting
 
@@ -103,8 +112,8 @@ search s g =
 
 -- Views
 
-viewSchedule : DaySchedule -> Html msg
-viewSchedule ds_ =
+viewSchedule : Set String -> DaySchedule -> Html Event.Msg
+viewSchedule favs ds_ =
     let
         ds = List.sortBy Tuple.first ds_
     in
@@ -117,12 +126,12 @@ viewSchedule ds_ =
                   in
                   div [ ]
                       [ div [ class "hour" ] [ a [ id hour ] [ h2 [] [ text hour ] ]]
-                      , viewEvents es ] )
+                      , viewEvents favs es ] )
                 ds)
 
-viewEvents : Events -> Html msg
-viewEvents es =
-    div [ class "events" ] (List.map viewEvent es)
+viewEvents : Set String -> Events -> Html Event.Msg
+viewEvents favs es =
+    div [ class "events" ] (List.map (viewEvent favs) es)
 
 -- Decode events CSV
 

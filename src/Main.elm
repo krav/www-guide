@@ -1,13 +1,12 @@
-module Main exposing (..)
+port module Main exposing (..)
 
 import Browser
 import Http
-import Html exposing (Html, a, div, text, input, button, h1)
-import Html.Attributes exposing (class, id, src, placeholder, value, href, disabled)
+import Html exposing (Html, a, div, text, input, button, h1, label)
+import Html.Attributes exposing (class, id, src, placeholder, value, href, disabled, type_, checked)
 import Html.Events exposing (onInput, onClick)
 
-import Guide exposing (Guide, Events, Selection, makeSchedule, viewSchedule, viewEvents, search)
-import Event exposing (Event, Category, Day)
+import Set exposing (Set)
 
 import Url
 import Url.Parser as UP exposing ((<?>))
@@ -16,6 +15,13 @@ import Browser.Navigation as Nav
 
 import Color
 import Markdown
+
+import Guide exposing (Guide, Events, Selection, makeSchedule, viewSchedule, viewEvents, search)
+import Event exposing (Event, Category, Day, Msg)
+
+import Json.Encode as E
+
+port storeFavs : E.Value -> Cmd msg
 
 ---- MODEL ----
 
@@ -34,21 +40,24 @@ type alias Model =
     , search : String
     , selection : Selection
     , route : Maybe Route
+    , favs : Set String
     }
+type alias Flags = (String, List String)
 
-init : String -> Url.Url -> Nav.Key -> ( Model, Cmd Msg )
-init csv url key =
+init : Flags -> Url.Url -> Nav.Key -> ( Model, Cmd Msg )
+init (csv, favs) url key =
     ( { key = key
       , guide = Nothing
       , error = NoErr
       , search = ""
       , selection =
-          { day = Event.Day "Monday 22."
-          , sorting = Guide.sortByTime
+          { sorting = Guide.sortByTime
           , familyFriendly = False
           , category = Nothing
+          , onlyFavs = False
           }
       , route = UP.parse routeParser url
+      , favs = Set.fromList favs
     }, getCsv csv )
 
 routeParser : UP.Parser (Route -> Route) Route
@@ -67,6 +76,8 @@ type Msg
     | SetDay String
     | UrlChanged Url.Url
     | LinkClicked Browser.UrlRequest
+    | UpdateEvent Event.Msg
+    | ToggleOnlyFavs
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
@@ -93,6 +104,25 @@ update msg model =
                     , Nav.pushUrl model.key (Url.toString url) )
                 Browser.External href ->
                     ( model, Nav.load href )
+        UpdateEvent (Event.Fav f) ->
+            let
+                newFavs = Set.insert f model.favs
+            in
+            ( { model | favs = newFavs }
+            , E.set E.string newFavs |> storeFavs )
+        UpdateEvent (Event.UnFav f) ->
+            let
+                newFavs = Set.remove f model.favs
+            in
+            ( { model | favs = newFavs }
+            , E.set E.string newFavs |> storeFavs )
+        ToggleOnlyFavs ->
+            let
+                selection = model.selection
+                newSelection = { selection | onlyFavs = not model.selection.onlyFavs }
+            in
+            ( { model | selection = newSelection }, Cmd.none)
+
 
 getCsv : String -> Cmd Msg
 getCsv url =
@@ -113,8 +143,9 @@ view model =
                 Nothing ->
                     { title = "Borderland Guide"
                     , body = [ viewError model.error
-                             , h1 [] [ text "Please Wait" ]
-                             , text "Mining bitcoin ..." ] }
+                             , div [ class "loading" ] [ text "Getting ready ..." ]
+                             ]
+                    }
                 Just guide ->
                     viewPage model guide page
 
@@ -128,16 +159,21 @@ viewPage model guide route =
         DayPage d ->
             if String.length model.search < 3 then
                 { title = "Borderland Guide - " ++ (Event.dayToString d)
-                , body = [ viewSelector guide.days model.search d
-                         , Guide.filter d model.selection guide.events
+                , body = [ viewSelector model.selection.onlyFavs guide.days model.search d
+                         , Guide.filter d model.favs model.selection guide.events
                          |> makeSchedule
-                         |> viewSchedule
+                         |> viewSchedule model.favs
+                         |> fromEventMsg
                       ]}
             else
                 { title = "Borderland Guide - " ++ model.search
-                , body = [ viewSelector guide.days model.search d
-                         , viewSearch model.search guide
+                , body = [ viewSelector model.selection.onlyFavs guide.days model.search d
+                         , viewSearch model.favs model.search guide |> fromEventMsg
                          ]}
+
+fromEventMsg : Html Event.Msg -> Html Msg
+fromEventMsg
+    = Html.map (\em -> UpdateEvent em)
 
 viewError : Error -> Html msg
 viewError e =
@@ -145,8 +181,8 @@ viewError e =
         NoErr -> text ""
         (Error s) -> text s
 
-viewSearch : String -> Guide -> Html msg -- TODO move
-viewSearch s g =
+viewSearch : Set String -> String -> Guide -> Html Event.Msg -- TODO move
+viewSearch favs s g =
     case search s g of
         Err er ->
             (text ("Search error: " ++ er))
@@ -154,10 +190,10 @@ viewSearch s g =
             List.map (\(match, score) ->
                           List.filter (\e -> String.contains match e.id) -- TODO inefficient
                           g.events)
-            (List.take 50 matches) |> List.concat |> viewEvents
+            (List.take 50 matches) |> List.concat |> viewEvents favs
 
-viewSelector : List Event.Day -> String -> Day -> Html Msg -- TODO move
-viewSelector days search day =
+viewSelector : Bool -> List Event.Day -> String -> Day -> Html Msg -- TODO move
+viewSelector onlyFavs days search day =
     div [ class "selector" ]
         [ div [ class "sel-row" ]
               [ Html.select [ Html.Events.onInput SetDay ]
@@ -170,6 +206,12 @@ viewSelector days search day =
               , div [] [ input [ placeholder "Search", value search, onInput Search ] []
                        , Html.button [ Html.Attributes.disabled (String.isEmpty search)
                                      , onClick (Search "") ] [ text "Clear" ]]
+              , div [] [ label [ ] [ input
+                                [ type_ "checkbox"
+                                , checked onlyFavs
+                                , onClick ToggleOnlyFavs ]
+                                []
+                          , text "Only show favourites"]]
            -- , div [] [ input [ Html.Attributes.type_ "checkbox" ] []
            --          , text "Only Favourites" ] -- TODO text for checkbox
               , a [ href "/about" ] [ text "About" ]
@@ -177,7 +219,7 @@ viewSelector days search day =
         ]
 
 viewAbout : Guide -> List (Html msg)
-viewAbout g =
+viewAbout g = -- TODO move
     [ div [ class "selector" ]
           [ div [ class "sel-row" ]
                 [ a [ href "/"] [ text "<- Back" ]
@@ -214,7 +256,7 @@ Bottom colour is camp colour. 🧸 is child friendly.
     ]
 ---- PROGRAM ----
 
-main : Program String Model Msg
+main : Program Flags Model Msg
 main =
     Browser.application
         { view = view

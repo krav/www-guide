@@ -7,9 +7,11 @@ import Time
 import Clock exposing (RawTime, Time, fromRawParts, getHours, getMinutes)
 import Html exposing (Html, a, div, text, h2, h3, h4, input)
 import Html.Attributes exposing (class, id, style)
+import Html.Events exposing (onClick)
 import Markdown
 import Regex
 
+import Set exposing (Set)
 
 import Color exposing (Color)
 import Color.Generator
@@ -35,12 +37,8 @@ type alias Event =
     , allDay : Bool
     }
 
-type alias UserInfo a =
-    { a | fav : Bool
-        , id : String
-    }
-type alias UserEvent = UserInfo(Event)
-
+type Msg = Fav String
+         | UnFav String
 
 type alias CategoryMeta = { emoji : String, color : Color }
 
@@ -108,9 +106,10 @@ categoryToColor c = categoryGetMeta c |> .color
 campToColor : String -> Color
 campToColor s = Murmur3.hashString 123 s |> colorWheel 45
 
+
 -- View
-viewEvent : Event -> Html msg
-viewEvent e = -- TODO messy
+viewEvent : Set String -> Event -> Html Msg
+viewEvent favs e = -- TODO messy
     div [ class "event"
         , style "background" <| "linear-gradient(180deg, " ++ Color.toRGBString(categoryToColor e.category) ++ " 70%, " ++
                                 Color.toRGBString(campToColor e.camp)
@@ -118,7 +117,7 @@ viewEvent e = -- TODO messy
         , style "color" <| Color.toRGBString <| Color.Generator.highContrast <| categoryToColor e.category
         ]
         --, class (categoryToSymbol e.category) ]
-        [ div [ class "row" ]
+        [ div [ class "content" ] [ div [ class "row" ]
               [ div [ class "title" ] [ text e.title ]
               , text <| categoryToEmoji e.category
               , text <| if e.kidFriendly then "🧸" else "" ]
@@ -137,13 +136,18 @@ viewEvent e = -- TODO messy
                                                     [ text <| dayToShortString d ])
                                           e.dates)]
         , Markdown.toHtml [ class "description" ] e.description
-        , div [ class "row"
+        , div [ class "row lastRow"
               , style "color" <| Color.toRGBString <| Color.Generator.highContrast <| campToColor e.camp
               ]
               [ div [ class "camp"
                     ] [ text e.camp ]
               , div [ class "host" ] [ text e.host ]
+              , if Set.member e.id favs then
+                    div [ onClick (UnFav e.id) ] [ text "unlike" ]
+                else
+                    div [ onClick (Fav e.id) ] [ text "like" ]
               ]]
+        ]
 
 timeToString t = (getHours t |> String.fromInt |> String.pad 2 '0')
                ++ ":"

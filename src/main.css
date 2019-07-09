@@ -11,10 +11,21 @@
 
 body {
     font-family: 'Rubik', sans-serif;
-//  font-family: 'Source Sans Pro', 'Trebuchet MS', 'Lucida Grande', 'Bitstream Vera Sans', 'Helvetica Neue', sans-serif;
-//  margin: 0;
-//  text-align: center;
-//  color: #293c4b;
+    height: 100%;
+}
+
+html {
+    height: 100%;
+}
+
+.loading {
+    background-image: url("loading.jpg");
+    height: 100%;
+    margin: -10px;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    color: white;
 }
 
 .hour {
@@ -22,14 +33,15 @@ body {
     width: 100%;
     border-bottom: 2px solid black;
 }
+
 .hour h2 {
     margin-bottom: -5px;
 }
 
-
 .sel-days {
     justify-content: space-between;
 }
+
 .sel-row {
     display: flex;
     justify-content: space-between;
@@ -51,6 +63,7 @@ body {
     width: 150px;
     margin-right: 10px;
 }
+
 .selector a {
 }
 
@@ -59,9 +72,10 @@ body {
 }
 
 .events {
-    display: flex;
-    justify-content: flex-start;
-    flex-wrap: wrap;
+    display: grid;
+    grid-gap: 10px;
+    grid-template-columns: repeat(auto-fill, minmax(400px,1fr));
+    grid-auto-rows: 20px;
 }
 
 .colordesc {
@@ -76,35 +90,36 @@ body {
 
 
 .event {
-    flex-wrap: wrap;
-    align-self: baseline;
     box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
     border-radius: 5px;
     padding: 10px 16px 10px 16px;
     margin: 10px;
-    width: 400px;
 }
 
-.event .title {
+.content {
+}
+
+.title {
     font-size: 14pt;
     font-weight: 800;
 }
 
-.event .camp {
+.camp {
     font-size: 12pt;
     font-weight: 800;
 }
 
-.event .host {
-    font-size: 10pt;
-}
-
-.event .time {
+.host {
     font-size: 10pt;
     font-family: 'Roboto', sans-serif;
 }
 
-.event .day {
+.time {
+    font-size: 10pt;
+    font-family: 'Roboto', sans-serif;
+}
+
+.day {
     font-size: 10pt;
     font-family: 'Roboto', sans-serif;
     padding-left: 10px;
@@ -115,39 +130,7 @@ body {
     justify-content: flex-end;
 }
 
-.djmusicmightgetseparatepresentation {
-    background-color: #845ec2;
-}
-.workshopclass {
-    background-color: #d65db1;
-}
-.caresupport {
-    background-color: #ff6f91;
-}
-.fire {
-    background-color: #ff9671;
-}
-.food {
-    background-color: #ffc75f;
-}
-.games {
-    background-color: #f9f871;
-}
-.parade {
-    background-color: #2c73d2;
-}
-.partygathering {
-    background-color: #008f7a;
-}
-.performance {
-    background-color: #fbeaff;
-}
-.ritualceremony {
-    background-color: #c34a36;
-}
-
-
-.event .row {
+.row {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
@@ -157,5 +140,23 @@ body {
     font-family: 'Roboto', sans-serif;
     font-size: 12pt;
     font-weight: 400;
+}
+
+@font-face {
+    font-family: 'Rubik';
+    font-style: normal;
+    font-weight: 400;
+    src: local('Rubik'), local('Rubik-Regular'),
+         url('fonts/rubik-v8-latin-regular.woff2') format('woff2'), /* Chrome 26+, Opera 23+, Firefox 39+ */
+         url('fonts/rubik-v8-latin-regular.woff') format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+}
+
+@font-face {
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: 400;
+    src: local('Roboto'), local('Roboto-Regular'),
+         url('fonts/roboto-v19-latin-regular.woff2') format('woff2'), /* Chrome 26+, Opera 23+, Firefox 39+ */
+         url('fonts/roboto-v19-latin-regular.woff') format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
 }
 
