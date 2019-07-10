@@ -78,14 +78,14 @@ categoryToSymbol (Category c) = String.toLower c |> Regex.replace (Regex.fromStr
 dayToString (Day c) = c
 dayToShortString (Day c) = String.left 3 c
 
-colorWheel l i  =
-    Color.Generator.rotate ((toFloat i) * 360 / (toFloat l)) (Color.fromRGB (167, 255, 145))
+colorWheel startcolor l i =
+    Color.Generator.rotate ((toFloat i) * 360 / (toFloat l)) startcolor
 
 categoryColor i _ =
     let
         length = List.length categoryEnum
     in
-        colorWheel length i
+        colorWheel (Color.fromRGB (167, 255, 145)) length i
 
 categoryMeta : Dict String CategoryMeta
 categoryMeta = -- TODO messy
@@ -104,16 +104,16 @@ categoryToColor : Category -> Color
 categoryToColor c = categoryGetMeta c |> .color
 
 campToColor : String -> Color
-campToColor s = Murmur3.hashString 123 s |> colorWheel 45
+campToColor s = Murmur3.hashString 123 s |> colorWheel (Color.fromRGB (167, 255, 200)) 1280
 
 
 -- View
 viewEvent : Set String -> Event -> Html Msg
 viewEvent favs e = -- TODO messy
     div [ class "event"
-        , style "background" <| "linear-gradient(180deg, " ++ Color.toRGBString(categoryToColor e.category) ++ " 70%, " ++
+        , style "background" <| "linear-gradient(180deg, " ++ Color.toRGBString(categoryToColor e.category) ++ " 40%, " ++
                                 Color.toRGBString(campToColor e.camp)
-                                ++ " 100%)"
+                                ++ " 99%)"
         , style "color" <| Color.toRGBString <| Color.Generator.highContrast <| categoryToColor e.category
         ]
         --, class (categoryToSymbol e.category) ]
@@ -143,9 +143,11 @@ viewEvent favs e = -- TODO messy
                     ] [ text e.camp ]
               , div [ class "host" ] [ text e.host ]
               , if Set.member e.id favs then
-                    div [ onClick (UnFav e.id) ] [ text "unlike" ]
+                    div [ class "favbtn"
+                        , onClick (UnFav e.id) ] [ text "💖" ]
                 else
-                    div [ onClick (Fav e.id) ] [ text "like" ]
+                    div [ class "favbtn"
+                        , onClick (Fav e.id) ] [ text "♡" ]
               ]]
         ]
 

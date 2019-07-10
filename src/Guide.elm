@@ -141,7 +141,7 @@ parseCsv s = -- CD.decode expects a different error
 
 decodeEvents : Decoder (Event -> Event) Event
 decodeEvents =
-        map Event (field "Timestamp" Ok -- FIXME id
+        map Event (field "Timestamp" Ok
                   |> andMap (field "Title of Event" Ok)
                   |> andMap (field "Your preferred/playa name" Ok)
                   |> andMap (field "Location" Ok)

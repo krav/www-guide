@@ -8,10 +8,11 @@ Turn a CSV file into a festival What Where When Guide. [example](https://guide.t
 
 ## TODO
 
-* print view
+* fix selector to top, make nice in 400 px
+* more camp colours
+* nicer like icon
 
-* Favourite button (local storage backed)
-* Filter on favourite
+* print view
 
 * Performance: cache and update search index
 * Performance: filterbyday is pretty slow, but ok (List.member)
@@ -19,6 +20,8 @@ Turn a CSV file into a festival What Where When Guide. [example](https://guide.t
 
 ## Wishlist
 
+* Listen on scroll event and update hour selector 
+* filtering on fav could just be css
 * add a thing to history so that back button on phones don't just close the app
 * make all day events smaller - or just move them away
 * display and clear errors better
