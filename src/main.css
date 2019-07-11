@@ -56,7 +56,7 @@ html {
 
 @media only screen and (max-width: 600px) {
     .main {
-        padding-top: 50px;
+        margin-top: 80px;
     }
     .search {
         width: 90px;
@@ -83,7 +83,7 @@ html {
         margin-left: 30px;
     }
     .main {
-        padding-top: 20px;
+        margin-top: 50px;
     }
 }
 
