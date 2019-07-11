@@ -160,15 +160,16 @@ viewPage model guide route =
             if String.length model.search < 3 then
                 { title = "Borderland Guide - " ++ (Event.dayToString d)
                 , body = [ viewSelector model.selection.onlyFavs guide.days model.search d
-                         , Guide.filter d model.favs model.selection guide.events
+                         , div [ class "main" ] [ Guide.filter d model.favs model.selection guide.events
                          |> makeSchedule
                          |> viewSchedule model.favs
                          |> fromEventMsg
+                                                   ]
                       ]}
             else
                 { title = "Borderland Guide - " ++ model.search
                 , body = [ viewSelector model.selection.onlyFavs guide.days model.search d
-                         , viewSearch model.favs model.search guide |> fromEventMsg
+                         , div [class "main" ] [ viewSearch model.favs model.search guide |> fromEventMsg ]
                          ]}
 
 fromEventMsg : Html Event.Msg -> Html Msg
@@ -195,7 +196,7 @@ viewSearch favs s g =
 viewSelector : Bool -> List Event.Day -> String -> Day -> Html Msg -- TODO move
 viewSelector onlyFavs days search day =
     div [ class "selector" ]
-        [ div [ class "sel-row" ]
+        [ div [ class "left" ]
               [ Html.select [ Html.Events.onInput SetDay ]
                (List.map (\d ->
                               Html.option
@@ -203,31 +204,33 @@ viewSelector onlyFavs days search day =
                               , Html.Attributes.selected (day == d)]
                               [ text (Event.dayToString d) ])
                 days)
-              , div [] [ input [ placeholder "Search", value search, onInput Search ] []
-                       , Html.button [ Html.Attributes.disabled (String.isEmpty search)
-                                     , onClick (Search "") ] [ text "Clear" ]]
-              , div [] [ label [ ] [ input
+              , Html.span [] [input [ placeholder "Search"
+                      , class "search"
+                      , value search
+                      , onInput Search ] []
+              , Html.button [ Html.Attributes.disabled (String.isEmpty search)
+                            , onClick (Search "") ] [ text "Clear" ]]
+              , Html.span [] [label [] [ input
                                 [ type_ "checkbox"
                                 , checked onlyFavs
                                 , onClick ToggleOnlyFavs ]
                                 []
-                          , text "Only show favourites"]]
-           -- , div [] [ input [ Html.Attributes.type_ "checkbox" ] []
-           --          , text "Only Favourites" ] -- TODO text for checkbox
-              , a [ href "/about" ] [ text "About" ]
+                          , text "💖"]]
             ]
+        , div [ class "right" ]
+            [ a [ href "/about" ] [ text "About" ] ]
         ]
 
 viewAbout : Guide -> List (Html msg)
 viewAbout g = -- TODO move
     [ div [ class "selector" ]
-          [ div [ class "sel-row" ]
-                [ a [ href "/"] [ text "<- Back" ]
-                , a [ href "https://menu.theborderland.se"
-                    , Html.Attributes.target "_blank" ]
-                      [ text "To Other Borderland Sites ->" ]]
-          ]
-    , Markdown.toHtml [] """
+          [ div [ class "left" ]
+                [ a [ href "/"] [ text "<- Back" ]]
+          , div [ class "right" ] [ a [ href "https://menu.theborderland.se"
+                                      , Html.Attributes.target "_blank" ]
+                                        [ text "To Other Borderland Sites ->" ]
+                                  ]]
+    , Markdown.toHtml [ class "main" ] """
 # Borderland That There Then Guide
 Add this page to your **homescreen** *so it's almost like an app:*
 
