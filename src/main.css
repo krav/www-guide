@@ -33,6 +33,7 @@ html {
     margin-top: 2em;
     width: 100%;
     border-bottom: 2px solid black;
+    margin-bottom: 10px;
 }
 
 .hour h2 {
