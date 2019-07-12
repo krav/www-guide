@@ -161,7 +161,7 @@ eventCsv e = List.map (\d -> String.join "," [ "\"" ++ e.title ++ "\""
                              , eventEndTime e |> timeToString
                              , "\"" ++ e.camp ++ "\""
                              , "\"" ++ e.host ++ "\""
-                             , "\"" ++ (e.description |> Regex.replace (Regex.fromString "\n" |> Maybe.withDefault Regex.never) (\_ -> " ")) ++ "\""
+                             , "\"" ++ (e.description |> Regex.replace (Regex.fromString "\n" |> Maybe.withDefault Regex.never) (\_ -> " ")  |> String.replace "\"" "\"\"") ++ "\""
                              , dayToString d ]) e.dates
              |> String.join "\n"
 
