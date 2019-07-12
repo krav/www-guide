@@ -20,14 +20,6 @@ html {
 .favbtn {
     cursor: pointer;
 }
-.loading {
-    background-image: url("loading.jpg");
-    height: 100%;
-    margin: -10px;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: cover;
-}
 
 .hour {
     margin-top: 2em;
@@ -83,7 +75,7 @@ html {
         margin-left: 30px;
     }
     .main {
-        margin-top: 50px;
+        margin-top: 70px;
     }
 }
 
