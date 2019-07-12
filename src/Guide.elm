@@ -125,7 +125,7 @@ viewSchedule favs ds_ =
                                  (String.fromInt h |> String.pad 2 '0')++":00"
                   in
                   div [ ]
-                      [ div [ class "hour" ] [ a [ id hour ] [ h2 [] [ text hour ] ]]
+                      [ div [ class "hour" ] [ h2 [ id hour ] [ text hour ] ]
                       , viewEvents favs es ] )
                 ds)
 

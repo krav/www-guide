@@ -33,6 +33,7 @@ html {
     margin-top: 2em;
     width: 100%;
     border-bottom: 2px solid black;
+    margin-bottom: 10px;
 }
 
 .hour h2 {
@@ -55,7 +56,7 @@ html {
 
 @media only screen and (max-width: 600px) {
     .main {
-        padding-top: 50px;
+        margin-top: 80px;
     }
     .search {
         width: 90px;
@@ -82,7 +83,7 @@ html {
         margin-left: 30px;
     }
     .main {
-        padding-top: 20px;
+        margin-top: 50px;
     }
 }
 
