@@ -45,7 +45,9 @@ html {
 .search {
     margin: 0 5px 0 10px;
 }
-
+.main {
+    margin-bottom: 50px;
+}
 @media only screen and (max-width: 600px) {
     .main {
         margin-top: 80px;
