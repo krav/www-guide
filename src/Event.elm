@@ -153,17 +153,23 @@ eventEndTime : Event -> Time
 eventEndTime e = Clock.fromPosix <| Time.millisToPosix <| (Clock.toMillis e.time)+e.duration*60000
 
 eventCsv : Event -> String
-eventCsv e = List.map (\d -> String.join "," [ "\"" ++ e.title ++ "\""
-                             , categoryToString e.category
-                             , if e.kidFriendly then "kid friendly" else "kid unfriendly"
-                             , if e.allDay then "all day" else "not all day"
-                             , timeToString e.time
-                             , eventEndTime e |> timeToString
-                             , "\"" ++ e.camp ++ "\""
-                             , "\"" ++ e.host ++ "\""
-                             , "\"" ++ (e.description |> Regex.replace (Regex.fromString "\n" |> Maybe.withDefault Regex.never) (\_ -> " ")  |> String.replace "\"" "\"\"") ++ "\""
-                             , dayToString d ]) e.dates
-             |> String.join "\n"
+eventCsv e = List.map (\d -> String.join ","
+                           [ csvEscape e.title
+                           , categoryToString e.category
+                           , if e.kidFriendly then "kid friendly" else "kid unfriendly"
+                           , if e.allDay then "all day" else "not all day"
+                           , timeToString e.time
+                           , eventEndTime e |> timeToString
+                           , csvEscape e.camp
+                           , csvEscape e.host
+                           , csvEscape e.description
+                           , dayToString d
+                           , List.map (\f -> dayToString f) e.dates |> String.join "," |> csvEscape
+                           ]) e.dates
+           |> String.join "\n"
+
+csvEscape : String -> String
+csvEscape s = "\"" ++ (String.replace "\n" " " s |> String.replace "\"" "\"\"") ++ "\""
 
 timeToString t = (getHours t |> String.fromInt |> String.pad 2 '0')
                ++ ":"
