@@ -153,14 +153,14 @@ eventEndTime : Event -> Time
 eventEndTime e = Clock.fromPosix <| Time.millisToPosix <| (Clock.toMillis e.time)+e.duration*60000
 
 eventCsv : Event -> String
-eventCsv e = List.map (\d -> String.join "," [ e.title
+eventCsv e = List.map (\d -> String.join "," [ "\"" ++ e.title ++ "\""
                              , categoryToString e.category
                              , if e.kidFriendly then "kid friendly" else "kid unfriendly"
                              , if e.allDay then "all day" else "not all day"
                              , timeToString e.time
                              , eventEndTime e |> timeToString
-                             , e.camp
-                             , e.host
+                             , "\"" ++ e.camp ++ "\""
+                             , "\"" ++ e.host ++ "\""
                              , "\"" ++ (e.description |> Regex.replace (Regex.fromString "\n" |> Maybe.withDefault Regex.never) (\_ -> " ")) ++ "\""
                              , dayToString d ]) e.dates
              |> String.join "\n"
