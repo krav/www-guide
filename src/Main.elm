@@ -17,9 +17,10 @@ import Color
 import Markdown
 
 import Guide exposing (Guide, Events, Selection, makeSchedule, viewSchedule, viewEvents, search)
-import Event exposing (Event, Category, Day, Msg)
+import Event exposing (Event, Category, Day, Msg, eventCsv)
 
 import Json.Encode as E
+import File.Download as Download
 
 port storeFavs : E.Value -> Cmd msg
 
@@ -78,6 +79,7 @@ type Msg
     | LinkClicked Browser.UrlRequest
     | UpdateEvent Event.Msg
     | ToggleOnlyFavs
+    | ExportCsv
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
@@ -122,7 +124,12 @@ update msg model =
                 newSelection = { selection | onlyFavs = not model.selection.onlyFavs }
             in
             ( { model | selection = newSelection }, Cmd.none)
-
+        ExportCsv ->
+            case model.guide of
+                Just g ->
+                    ( model, Download.string "guide.csv" "text/csv" <| String.join "\n" <| List.map eventCsv g.events)
+                Nothing ->
+                    ( model, Cmd.none )
 
 getCsv : String -> Cmd Msg
 getCsv url =
@@ -221,7 +228,7 @@ viewSelector onlyFavs days search day =
             [ a [ href "/about" ] [ text "About" ] ]
         ]
 
-viewAbout : Guide -> List (Html msg)
+viewAbout : Guide -> List (Html Msg)
 viewAbout g = -- TODO move
     [ div [ class "selector" ]
           [ div [ class "left" ]
@@ -256,6 +263,9 @@ Bottom colour is camp colour. 🧸 is child friendly.
                                                       , text "   "
                                                       , text <| Event.categoryToString c ] ]
                          ) Event.categoryEnum
+    , div [] [ Html.h2 [] [ text "Other formats" ]
+             , button [ onClick ExportCsv ] [ text "Download CSV"]
+   ]
     ]
 ---- PROGRAM ----
 
