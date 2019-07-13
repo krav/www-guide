@@ -8,7 +8,7 @@ fetch:
 build: fetch src/*elm
 	elm-app build
 	touch docs/.nojekyll
-	echo -n guide.theborderland.se > docs/CNAME
+	/bin/echo -n guide.theborderland.se > docs/CNAME
 	ln -s index.html docs/404.html
 	git add docs
 
