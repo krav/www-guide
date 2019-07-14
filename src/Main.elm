@@ -18,6 +18,7 @@ import Markdown
 
 import Guide exposing (Guide, Events, Selection, makeSchedule, viewSchedule, viewEvents, search)
 import Event exposing (Event, Category, Day, Msg, eventCsv)
+import Map exposing (viewMap)
 
 import Json.Encode as E
 import File.Download as Download
@@ -33,6 +34,7 @@ type Error
 type Route
     = AboutPage
     | DayPage Event.Day
+    | MapPage
 
 type alias Model =
     { key : Nav.Key
@@ -67,6 +69,7 @@ routeParser
       [ UP.map AboutPage (UP.s "about")
       , UP.map (\s -> DayPage <| Event.Day <| Maybe.withDefault "Monday 22." s ) (UP.top <?> Query.string "day")
       , UP.map (\s -> DayPage <| Event.Day <| Maybe.withDefault "Monday 22." s ) (UP.s "index.html" <?> Query.string "day")
+      , UP.map MapPage (UP.s "map")
       ]
 
 ---- UPDATE ----
@@ -178,6 +181,12 @@ viewPage model guide route =
                 , body = [ viewSelector model.selection.onlyFavs guide.days model.search d
                          , div [class "main" ] [ viewSearch model.favs model.search guide |> fromEventMsg ]
                          ]}
+        MapPage ->
+            { title = "Borderland Guide - Map"
+            , body = [ div [ class "selector" ]
+                           [ div [ class "left" ]
+                                 [ a [ href "/"] [ text "<- Back" ]]]
+                     , div [ class "main" ] viewMap ]}
 
 fromEventMsg : Html Event.Msg -> Html Msg
 fromEventMsg
