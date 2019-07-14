@@ -10,5 +10,7 @@ build: fetch src/*elm
 	touch docs/.nojekyll
 	/bin/echo -n guide.theborderland.se > docs/CNAME
 	ln -s index.html docs/404.html
+	ln -s WWW-FOMO* docs/print
+	ln -s WWW-FOMO* docs/print.pdf
 	git add docs
 
