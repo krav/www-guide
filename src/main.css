@@ -95,7 +95,7 @@ html {
 }
 @media only screen and (max-width: 600px) {
     .main {
-        margin-top: 80px;
+        margin-top: 90px;
     }
     .search {
         width: 90px;
