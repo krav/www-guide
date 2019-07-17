@@ -19,6 +19,7 @@ import Markdown
 import Guide exposing (Guide, Events, Selection, makeSchedule, viewSchedule, viewEvents, search)
 import Event exposing (Event, Category, Day, Msg, eventCsv)
 import Map exposing (viewMap)
+import Wall exposing (viewWall)
 
 import Json.Encode as E
 import File.Download as Download
@@ -35,6 +36,7 @@ type Route
     = AboutPage
     | DayPage Event.Day
     | MapPage
+    | WallPage
 
 type alias Model =
     { key : Nav.Key
@@ -70,6 +72,7 @@ routeParser
       , UP.map (\s -> DayPage <| Event.Day <| Maybe.withDefault "Monday 22." s ) (UP.top <?> Query.string "day")
       , UP.map (\s -> DayPage <| Event.Day <| Maybe.withDefault "Monday 22." s ) (UP.s "index.html" <?> Query.string "day")
       , UP.map MapPage (UP.s "map")
+      , UP.map WallPage (UP.s "wall")
       ]
 
 ---- UPDATE ----
@@ -187,6 +190,14 @@ viewPage model guide route =
                            [ div [ class "left" ]
                                  [ a [ href "/"] [ text "<- Back" ]]]
                      , div [ class "main" ] viewMap ]}
+        WallPage ->
+            { title = "Borderland Guide - Wall"
+            , body = [ div [ class "selector" ]
+                           [ div [ class "left" ]
+                                 [ a [ href "/"] [ text "<- Back" ]]]
+                     , div [ class "main"
+                           , class "wall" ] viewWall ]}
+
 
 fromEventMsg : Html Event.Msg -> Html Msg
 fromEventMsg
@@ -234,7 +245,9 @@ viewSelector onlyFavs days search day =
                           , text "💖"]]
             ]
         , div [ class "right" ]
-            [ a [ href "/about" ] [ text "About" ] ]
+            [ a [ href "/wall" ] [ text "Wall" ]
+            , a [ href "/map" ] [ text "Map" ]
+            , a [ href "/about" ] [ text "About" ] ]
         ]
 
 viewAbout : Guide -> List (Html Msg)
