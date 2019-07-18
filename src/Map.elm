@@ -289,8 +289,9 @@ camps = List.sortBy Tuple.second [("A0","[re]connect [re]connection temple")
         ,("SC3","The Glade")]
 
 viewMap : List (Html msg)
-viewMap = [ img [ class "map"
-                , src "/map.png" ] []
+viewMap = [ a [ href "/map.png"
+              , target "_blank" ] [ img [ class "map"
+                                        , src "/map.png" ] [] ]
           , h2 [] [ text "List of camps" ]
           , viewCamps
           ]

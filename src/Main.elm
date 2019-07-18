@@ -19,7 +19,6 @@ import Markdown
 import Guide exposing (Guide, Events, Selection, makeSchedule, viewSchedule, viewEvents, search)
 import Event exposing (Event, Category, Day, Msg, eventCsv)
 import Map exposing (viewMap)
-import Wall exposing (viewWall)
 
 import Json.Encode as E
 import File.Download as Download
@@ -46,6 +45,7 @@ type alias Model =
     , selection : Selection
     , route : Maybe Route
     , favs : Set String
+    , wall : String
     }
 type alias Flags = (String, List String)
 
@@ -63,6 +63,7 @@ init (csv, favs) url key =
           }
       , route = UP.parse routeParser url
       , favs = Set.fromList favs
+      , wall = "Fetching wall from the Internet ..."
     }, getCsv csv )
 
 routeParser : UP.Parser (Route -> Route) Route
@@ -86,6 +87,8 @@ type Msg
     | UpdateEvent Event.Msg
     | ToggleOnlyFavs
     | ExportCsv
+    | GetWall
+    | GotWall (Result Http.Error String)
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
@@ -136,6 +139,16 @@ update msg model =
                     ( model, Download.string "guide.csv" "text/csv" <| String.join "\n" <| List.map eventCsv g.events)
                 Nothing ->
                     ( model, Cmd.none )
+        GetWall ->
+            ( model, getWall "https://board.net/p/piefohJiepha9mei6quaizi8eshaiG3weisho4da3vahfug8wi/export/markdown" )
+        GotWall r ->
+            ( { model | wall = Result.withDefault "Unable to fetch wall" r }
+            , Cmd.none )
+
+getWall : String -> Cmd Msg
+getWall url =
+    Http.get { url = url
+             , expect = Http.expectString GotWall }
 
 getCsv : String -> Cmd Msg
 getCsv url =
@@ -188,15 +201,21 @@ viewPage model guide route =
             { title = "Borderland Guide - Map"
             , body = [ div [ class "selector" ]
                            [ div [ class "left" ]
-                                 [ a [ href "/"] [ text "<- Back" ]]]
+                                 [ a [ href "/"] [ text "Back" ]]]
                      , div [ class "main" ] viewMap ]}
         WallPage ->
             { title = "Borderland Guide - Wall"
             , body = [ div [ class "selector" ]
                            [ div [ class "left" ]
-                                 [ a [ href "/"] [ text "<- Back" ]]]
-                     , div [ class "main"
-                           , class "wall" ] viewWall ]}
+                                 [ a [ href "/"] [ text "Back" ]]
+                           , div [ class "right" ]
+                                 [ a [ href "https://board.net/p/piefohJiepha9mei6quaizi8eshaiG3weisho4da3vahfug8wi"
+                                     , Html.Attributes.target "_blank" ] [ text "Edit" ]]]
+                     , div [ class "main" ] (viewWall model) ]}
+
+
+viewWall : Model -> List (Html msg)
+viewWall m = [ Markdown.toHtml [ class "wall" ] m.wall ]
 
 
 fromEventMsg : Html Event.Msg -> Html Msg
@@ -245,7 +264,8 @@ viewSelector onlyFavs days search day =
                           , text "💖"]]
             ]
         , div [ class "right" ]
-            [ a [ href "/wall" ] [ text "Wall" ]
+            [ a [ href "/wall"
+                , onClick GetWall ] [ text "Wall" ]
             , a [ href "/map" ] [ text "Map" ]
             , a [ href "/about" ] [ text "About" ] ]
         ]
@@ -254,10 +274,10 @@ viewAbout : Guide -> List (Html Msg)
 viewAbout g = -- TODO move
     [ div [ class "selector" ]
           [ div [ class "left" ]
-                [ a [ href "/"] [ text "<- Back" ]]
+                [ a [ href "/"] [ text "Back" ]]
           , div [ class "right" ] [ a [ href "https://menu.theborderland.se"
                                       , Html.Attributes.target "_blank" ]
-                                        [ text "To Other Borderland Sites ->" ]
+                                        [ text "To Other Borderland Sites" ]
                                   ]]
     , Markdown.toHtml [ class "main" ] """
 # Borderland That There Then Guide
@@ -272,7 +292,7 @@ You can submit new events and edit old ones by [using our form](https://docs.goo
 
 Only you can prevent this site from sucking by [making pull requests](https://github.com/krav/www-guide).
 
-Be Gay, Do Crime!
+🏴 Be Gay, Do Crime! 🏴
 
 ## Colour coding and emoji explained
 Bottom colour is camp colour. 🧸 is child friendly.
