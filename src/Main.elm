@@ -142,7 +142,7 @@ update msg model =
         GetWall ->
             ( model, getWall "https://nix.microdisko.no/p/piefohJiepha9mei6quaizi8eshaiG3weisho4da3vahfug8wi/export/markdown" )
         GotWall r ->
-            ( { model | wall = Result.withDefault "Unable to fetch wall" r }
+            ( { model | wall = Result.withDefault "Failed to fetch wall from The Internet - check your connection" r }
             , Cmd.none )
 
 getWall : String -> Cmd Msg
