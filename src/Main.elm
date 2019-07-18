@@ -140,7 +140,7 @@ update msg model =
                 Nothing ->
                     ( model, Cmd.none )
         GetWall ->
-            ( model, getWall "https://board.net/p/piefohJiepha9mei6quaizi8eshaiG3weisho4da3vahfug8wi/export/markdown" )
+            ( model, getWall "https://nix.microdisko.no/p/piefohJiepha9mei6quaizi8eshaiG3weisho4da3vahfug8wi/export/markdown" )
         GotWall r ->
             ( { model | wall = Result.withDefault "Unable to fetch wall" r }
             , Cmd.none )
