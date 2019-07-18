@@ -263,7 +263,7 @@ viewSelector onlyFavs days search day =
                                 []
                           , text "💖"]]
             ]
-        , div [ class "right" ]
+        , div [ class "longright" ]
             [ a [ href "/wall"
                 , onClick GetWall ] [ text "Wall" ]
             , a [ href "/map" ] [ text "Map" ]
