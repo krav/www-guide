@@ -114,7 +114,7 @@ camps = List.sortBy Tuple.second [("A0","[re]connect [re]connection temple")
         ,("D5","JJ and SF Private camping, kitchen, tents")
         ,("D6","Camp Serendipity Camp Serendipity and our Workshop Lounge")
         ,("D6","Oyster Camp Emotional Striptease, Oinkville")
-        ,("E0","Camp at the End of the Universe The Psychonautic Chilldome")
+        ,("E0","The Psychonautic Chilldome")
         ,("E0","Camp at the End of the Universe Chilldome Patio Area")
         ,("E0","Camp at the End of the Universe Fire spinning space")
         ,("E0","Jam Camp Music & Theatre Improv JamSpace")
@@ -300,7 +300,7 @@ viewCamps : Html msg
 viewCamps = ul [ class "camplist" ] <| List.map (\c ->
                                                      li [] [ span [ class "campname" ]
                                                                  [ Tuple.second c
-                                                                 |> String.slice 0 30
+                                                                 |> String.slice 0 40
                                                                  |> text ]
                                                      , span [ class "camplocation" ]
                                                                  [ Tuple.first c
