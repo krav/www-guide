@@ -208,6 +208,7 @@ camps = List.sortBy Tuple.second [("A0","[re]connect [re]connection temple")
         ,("H2","Less is More")
         ,("H4","{Adult} LittleSpace [beta] Place only used, if not needed for bigger camps. (workshops, camping, play sessions.)")
         ,("H6","Space travel jam jamming sessions, small sound system, tent and shady area with coziness and gemütlichkeit")
+        ,("H6","Radical Faerie Wonderland")
         ,("X1","Theater of Touch Theater of Touch")
         ,("X1","Tantric Tipi The Tantric Tipi 2.0")
         ,("X1","Tapestry Weaver’s Guild Grand Treasure Hunt")
@@ -286,7 +287,8 @@ camps = List.sortBy Tuple.second [("A0","[re]connect [re]connection temple")
         ,("SC1","Tvorpet Tiny stage")
         ,("SC1","Outer Bass Ship large van, producing shaking grounds")
         ,("SC2","Deep Dive Sacred Shrine")
-        ,("SC3","The Glade")]
+        ,("SC3","The Glade")
+                                 ]
 
 viewMap : List (Html msg)
 viewMap = [ a [ href "/map.jpg"
