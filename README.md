@@ -41,3 +41,15 @@ Turn a CSV file into a festival What Where When Guide. [example](https://guide.t
 * chat/message boards
 * Turn CSV fields into a configuration with flags
 
+# Dev
+We use elm v3.0.7 because this works with elm 0.19.0 which is needed for this project
+```
+npm install create-elm-app@v3.0.7 -g
+make
+```
+
+# Deploy
+To deploy simply Fork-> Then set your repository as a github pages set the to master branch -> Done
+
+# Debug
+elm-app start
