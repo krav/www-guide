@@ -14,7 +14,7 @@ import Regex
 import Set exposing (Set)
 
 import Color exposing (Color)
-import Color.Generator
+import Palette.Generative
 import Palette.X11
 import Murmur3
 
@@ -79,7 +79,7 @@ dayToString (Day c) = c
 dayToShortString (Day c) = String.left 3 c
 
 colorWheel startcolor l i =
-    Color.Generator.rotate ((toFloat i) * 360 / (toFloat l)) startcolor
+    Color.rotateHue ((toFloat i) * 360 / (toFloat l)) startcolor
 
 categoryColor i _ =
     let
@@ -114,7 +114,7 @@ viewEvent favs e = -- TODO messy
         , style "background" <| "linear-gradient(180deg, " ++ Color.toRGBString(categoryToColor e.category) ++ " 40%, " ++
                                 Color.toRGBString(campToColor e.camp)
                                 ++ " 99%)"
-        , style "color" <| Color.toRGBString <| Color.Generator.highContrast <| categoryToColor e.category
+        , style "color" <| Color.toRGBString <| Color.highContrast <| categoryToColor e.category
         ]
         --, class (categoryToSymbol e.category) ]
         [ div [ class "content" ] [ div [ class "row" ]
@@ -135,7 +135,7 @@ viewEvent favs e = -- TODO messy
                                           e.dates)]
         , Markdown.toHtml [ class "description" ] e.description
         , div [ class "row lastRow"
-              , style "color" <| Color.toRGBString <| Color.Generator.highContrast <| campToColor e.camp
+              , style "color" <| Color.toRGBString <| Color.highContrast <| campToColor e.camp
               ]
               [ div [ class "camp"
                     ] [ text e.camp ]
