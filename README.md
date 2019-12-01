@@ -41,3 +41,5 @@ Turn a CSV file into a festival What Where When Guide. [example](https://guide.t
 * chat/message boards
 * Turn CSV fields into a configuration with flags
 
+# Deploy
+To deploy simply Fork-> Then set your repository as a github pages set the to master branch -> Done
